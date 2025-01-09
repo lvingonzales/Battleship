@@ -66,7 +66,7 @@ button:hover,
 }
 
 .choice-btn {
-    width: 7rem;
+    width: 18rem;
     height: 2rem;
     font-weight: 900;
     font-size: 1rem;
@@ -74,6 +74,7 @@ button:hover,
 
 .choice {
     display: flex;
+    flex: 1 1 0;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
@@ -86,12 +87,20 @@ footer {
     justify-content: space-around;
 }
 
-.dropdown {
+#dropdown-wrapper {
+    display: flex;
     position: relative;
+    width: 90%;
+}
+
+.dropdown {
+    width: 100%;
+    position: absolute;
     list-style: none;
     top: 0;
     padding-left: 0%;
-    margin-top: 0%;
+    z-index: 1;
+    margin: 0;
 }
 
 .dropdown > li {
@@ -108,4 +117,77 @@ footer {
 
 .hidden {
     display: none;
+}
+
+#container {
+    width: 800px;
+    height: 800px;
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-template-rows: repeat(12, 1fr);
+    border: 1px solid black;
+}
+
+#container > div {
+    border: 1px solid black;
+}
+
+#board {
+    display: flex;
+    flex-direction: column;
+    grid-area: 1 / 1 / 9 / 9;
+}
+
+#sidebar {
+    grid-area: 1 / 9 / 9 / 13;
+}
+
+#message-log {
+    grid-area: 9 / 1 / 13 / 13;
+    display: flex;
+    align-content: space-between;
+    justify-content: center;
+    flex-direction: column;
+    padding: 1rem;
+    gap: 1rem;
+}
+
+#message-log > div {
+    border: 1px solid black;
+}
+
+#turn-display {
+    flex: 1 1 0;
+    font-size: 2rem;
+    display: flex;
+    padding-left: 1rem;
+    align-items: center;
+}
+
+#message-box {
+    flex: 3 1 0;
+    overflow: scroll;
+    display: flex;
+    flex-direction: column-reverse;
+    justify-items: flex-start;
+    font-size: 1.25rem;
+}
+
+.row {
+    display: flex;
+    flex: 1 1 0;
+}
+
+.cell {
+    flex: 1 1 0;
+    border: 1px solid black;
+    background-color: white;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.cell.active:hover {
+    background-color: red;
 }
