@@ -50,9 +50,7 @@ class gameBoard {
     return false;
   }
 
-  receiveAttack(cell) {
-    let player = gameController.getActivePlayer();
-
+  receiveAttack(player, cell) {
     if (cell.ship === null) {
       cell.value = cell.value + 2;
       return `${player.name} shot cell: ${cell.x},${cell.y} ... MISS!`;
@@ -140,4 +138,4 @@ class Cell {
   }
 }
 
-export default gameBoard;
+export {gameBoard, Ship};

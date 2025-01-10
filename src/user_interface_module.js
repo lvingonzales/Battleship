@@ -1,4 +1,6 @@
 // Interface
+import gameController from "./game_controller.module";
+import gameBoard from "./board.module";
 const contentDiv = document.getElementById("content");
 const downArrow = "\u25BE";
 
@@ -10,13 +12,10 @@ const Interface = {
     switch (state) {
       case "start":
         gameController.initializeGame(gameType);
-        gameController.boardTest();
-        gamePage.loadGamePage();
-        gamePage.createBoard();
-        gamePage.loadCellData();
+        this.loadGamePage();
         break;
       case "home":
-        homePage.loadHomePage();
+        this.loadHomePage();
         break;
     }
   },
@@ -100,7 +99,7 @@ const Interface = {
         return;
       }
       console.log("changing to game screen");
-      changeScreen("start", button.dataset.chosenGameType);
+      this.changeScreen("start", button.dataset.chosenGameType);
     });
   },
 
@@ -189,19 +188,22 @@ const Interface = {
     let messageBox = document.createElement("div");
     messageBox.id = "message-box";
     messageLog.append(messageBox);
-  },
 
-  clearPage() {
-    if (contentDiv.lastElementChild === null) {
-      return;
-    }
-
-    let element = contentDiv.lastElementChild;
-    element.remove();
-    clearPage();
-    return;
+    this.createBoard();
+    this.loadCellData();
   },
 };
+
+function clearPage() {
+  if (contentDiv.lastElementChild === null) {
+    return;
+  }
+
+  let element = contentDiv.lastElementChild;
+  element.remove();
+  clearPage();
+  return;
+}
 
 function getCells() {
   return document.querySelectorAll(".cell");
@@ -242,13 +244,13 @@ async function handleClick(e) {
     return;
   }
 
+  addMessage(board.receiveAttack(gameController.getActivePlayer(),boardCell))
   updateCell(targetCell, boardCell);
-  addMessage()
   if (boardCell.value === 2) {
     // Swap to other board
     await turnTimer(3000);
     gameController.changeTurns();
-    gamePage.loadCellData();
+    Interface.loadCellData();
   } 
 
   getCells().forEach((cell) => {

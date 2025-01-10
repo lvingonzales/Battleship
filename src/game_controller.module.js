@@ -1,3 +1,4 @@
+import {gameBoard, Ship} from "./board.module";
 class Player {
   constructor(type, id, name) {
     this.type = type;
@@ -43,6 +44,7 @@ const gameController = {
     });
     this.activePlayer = this.players[0];
     this.phase = "setup";
+    this.boardTest();
   },
 
   getActivePlayer() {
