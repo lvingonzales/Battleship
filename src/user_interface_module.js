@@ -147,19 +147,28 @@ const Interface = {
   },
 
   addShipIcons() {
-    let sidebar = document.getElementById("sidebar");
+    let player = gameController.getActivePlayer();
 
-    let shipIconWrapper = document.createElement("div");
-    shipIconWrapper.classList.add("ship-wrapper");
-    shipIconWrapper.draggable = true;
+    for (let i = 0; i < player.ships.length; i++) {
+      let sidebar = document.getElementById("sidebar");
 
-    sidebar.append(shipIconWrapper);
-    shipIconWrapper.addEventListener("dragstart", () => {
-      shipIconWrapper.classList.add("active-ship");
-    });
-    shipIconWrapper.addEventListener("dragend", () => {
-      shipIconWrapper.classList.remove("active-ship");
-    });
+      let shipIconWrapper = document.createElement("div");
+      shipIconWrapper.classList.add("ship-wrapper");
+      if (i > 2) {
+        shipIconWrapper.style.gridRow = `6 / span ${player.ships[i].length}`;
+      } else {
+        shipIconWrapper.style.gridRow = `span ${player.ships[i].length}`;
+      }
+      shipIconWrapper.draggable = true;
+
+      sidebar.append(shipIconWrapper);
+      shipIconWrapper.addEventListener("dragstart", () => {
+        shipIconWrapper.classList.add("active-ship");
+      });
+      shipIconWrapper.addEventListener("dragend", () => {
+        shipIconWrapper.classList.remove("active-ship");
+      });
+    }
   },
 
   loadGamePage() {
@@ -234,7 +243,7 @@ async function handleClick(e) {
     Number(targetCell.dataset.x),
     Number(targetCell.dataset.y),
   );
-  
+
   getCells().forEach((cell) => {
     cell.removeEventListener("click", handleClick, true);
     cell.classList.remove("active");
@@ -244,14 +253,14 @@ async function handleClick(e) {
     return;
   }
 
-  addMessage(board.receiveAttack(gameController.getActivePlayer(),boardCell))
+  addMessage(board.receiveAttack(gameController.getActivePlayer(), boardCell));
   updateCell(targetCell, boardCell);
   if (boardCell.value === 2) {
     // Swap to other board
     await turnTimer(3000);
     gameController.changeTurns();
     Interface.loadCellData();
-  } 
+  }
 
   getCells().forEach((cell) => {
     if (cell.dataset.value <= 1) {

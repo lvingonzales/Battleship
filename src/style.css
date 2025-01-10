@@ -196,14 +196,14 @@ footer {
 #sidebar {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
+    grid-template-rows: repeat(10, 1fr);
     align-items: center;
     justify-items: center;
 }
 
 .ship-wrapper {
     width: 2.5rem;
-    height: 10rem;
+    height: 100%;
     border: 1px solid black;
 }
 
