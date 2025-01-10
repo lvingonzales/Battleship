@@ -191,3 +191,21 @@ footer {
 .cell.active:hover {
     background-color: red;
 }
+
+#sidebar {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    align-items: center;
+    justify-items: center;
+}
+
+.ship-wrapper {
+    width: 2.5rem;
+    height: 10rem;
+    border: 1px solid black;
+}
+
+.active-ship {
+    border: 3px solid yellow;
+}

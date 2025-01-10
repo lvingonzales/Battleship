@@ -1,29 +1,10 @@
-import { gameController } from "./main";
-
-// Home page
+// Interface
 const contentDiv = document.getElementById("content");
 const downArrow = "\u25BE";
 
-const clearPage = () => {
-  if (contentDiv.lastElementChild === null) {
-    return;
-  }
+const Interface = {
+  uiBoard: [...Array(10)].map(() => Array(10).fill("")),
 
-  let element = contentDiv.lastElementChild;
-  element.remove();
-  clearPage();
-  return;
-};
-
-let getCells = () => {
-  return document.querySelectorAll(".cell");
-};
-
-let getCellElement = (x, y) => {
-  return document.querySelector(`[data-x="${x}"][data-y="${y}"]`);
-};
-
-const homePage = {
   loadHomePage() {
     let title = document.createElement("div");
     title.id = "title";
@@ -106,27 +87,6 @@ const homePage = {
       changeScreen("start", button.dataset.chosenGameType);
     });
   },
-};
-
-const changeScreen = (state, gameType) => {
-  clearPage();
-
-  switch (state) {
-    case "start":
-      gameController.initializeGame(gameType);
-      gameController.boardTest();
-      gamePage.loadGamePage();
-      gamePage.createBoard();
-      gamePage.loadCellData();
-      break;
-    case "home":
-      homePage.loadHomePage();
-      break;
-  }
-};
-
-const gamePage = {
-  uiBoard: [...Array(10)].map(() => Array(10).fill("")),
 
   createBoard() {
     let boardDiv = document.getElementById("board");
@@ -153,7 +113,7 @@ const gamePage = {
 
   loadCellData() {
     let playerName = gameController.getActivePlayer().name;
-    let turnDisplay = document.getElementById('turn-display');
+    let turnDisplay = document.getElementById("turn-display");
     turnDisplay.textContent = `${playerName}'(s) turn`;
     let cells = getCells();
     let activeBoard;
@@ -171,6 +131,22 @@ const gamePage = {
     });
   },
 
+  addShipIcons() {
+    let sidebar = document.getElementById("sidebar");
+
+    let shipIconWrapper = document.createElement("div");
+    shipIconWrapper.classList.add("ship-wrapper");
+    shipIconWrapper.draggable = true;
+
+    sidebar.append(shipIconWrapper);
+    shipIconWrapper.addEventListener("dragstart", () => {
+      shipIconWrapper.classList.add("active-ship");
+    });
+    shipIconWrapper.addEventListener("dragend", () => {
+      shipIconWrapper.classList.remove("active-ship");
+    });
+  },
+
   loadGamePage() {
     let container = document.createElement("div");
     container.id = "container";
@@ -184,6 +160,8 @@ const gamePage = {
     sidebar.id = "sidebar";
     container.append(sidebar);
 
+    this.addShipIcons();
+
     let messageLog = document.createElement("div");
     messageLog.id = "message-log";
     container.append(messageLog);
@@ -196,9 +174,28 @@ const gamePage = {
     messageBox.id = "message-box";
     messageLog.append(messageBox);
   },
+
+  clearPage() {
+    if (contentDiv.lastElementChild === null) {
+      return;
+    }
+
+    let element = contentDiv.lastElementChild;
+    element.remove();
+    clearPage();
+    return;
+  },
 };
 
-const updateCell = (cell, boardCell) => {
+function getCells() {
+  return document.querySelectorAll(".cell");
+}
+
+function getCellElement(x, y) {
+  return document.querySelector(`[data-x="${x}"][data-y="${y}"]`);
+}
+
+function updateCell(cell, boardCell) {
   if (boardCell.value <= 1) {
     cell.textContent = "?";
   } else if (boardCell.value === 2) {
@@ -206,29 +203,32 @@ const updateCell = (cell, boardCell) => {
   } else if (boardCell.value === 3) {
     cell.textContent = "O";
   }
-};
+}
 
 function turnTimer(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 async function handleClick(e) {
-  let targetCell = e.target
+  let targetCell = e.target;
   let board = gameController.getOpposingBoard();
-  let boardCell = board.getCell(Number(targetCell.dataset.x), Number(targetCell.dataset.y));
+  let boardCell = board.getCell(
+    Number(targetCell.dataset.x),
+    Number(targetCell.dataset.y),
+  );
   let messageBox = document.getElementById("message-box");
   let newMessage = document.createElement("div");
   newMessage.classList.add("message");
 
-  getCells().forEach(cell => {
-    cell.removeEventListener('click', handleClick, true);
+  getCells().forEach((cell) => {
+    cell.removeEventListener("click", handleClick, true);
     cell.classList.remove("active");
-  })
+  });
 
   if (targetCell.dataset.value > 1) {
     return;
   }
-  
+
   let message = board.receiveAttack(boardCell);
   updateCell(targetCell, boardCell);
   if (boardCell.value === 2) {
@@ -242,13 +242,16 @@ async function handleClick(e) {
     messageBox.prepend(newMessage);
   }
 
-  getCells().forEach(cell => {
+  getCells().forEach((cell) => {
     if (cell.dataset.value <= 1) {
-      cell.classList.add('active');
-      cell.addEventListener('click', handleClick, true);
+      cell.classList.add("active");
+      cell.addEventListener("click", handleClick, true);
     }
-  })
+  });
+}
+
+function addMessage(message) {
 
 }
 
-export {homePage, changeScreen};
+export { Interface };

@@ -92,3 +92,9 @@
 // Testing Player class methods
 
 
+const addShipSet = require('./main.js');
+
+
+test (`addShipSet returns an array of objects that are instances of the Ship class`, () => {
+    expect(addShipSet()[0]).toBeInstanceOf(Ship);
+})

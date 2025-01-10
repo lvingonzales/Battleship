@@ -1,5 +1,5 @@
 import "./style.css";
-import { changeScreen, homePage } from "./user_interface_module";
+import { changeScreen, homePage, clearPage } from "./user_interface_module";
 
 class Ship {
   constructor(length) {
@@ -151,6 +151,7 @@ class Player {
     this.name = name;
     this.board = new gameBoard();
     this.board.fillBoard();
+    this.ships = [];
   }
 
   getBoard() {
@@ -182,6 +183,10 @@ const gameController = {
         this.players.push(new Player("com", 1, 'Jane Doe'));
         break;
     }
+
+    this.players.forEach(player => {
+      player.ships = addShipSet();
+    })
     this.activePlayer = this.players[0];
     this.phase = 'setup';
   },
@@ -216,8 +221,32 @@ const gameController = {
     this.changeTurns();
     this.phase = 'play';
   },
+
+  changeScreen(state, gameType) {
+    clearPage();
+    switch (state) {
+      case "start":
+        gameController.initializeGame(gameType);
+        gameController.boardTest();
+        gamePage.loadGamePage();
+        gamePage.createBoard();
+        gamePage.loadCellData();
+        break;
+      case "home":
+        homePage.loadHomePage();
+        break;
+    }
+  },
 };
 
-changeScreen('start', 'pvp');
+function addShipSet () {
+  let carrier = new Ship(5);
+  let battleship = new Ship(4);
+  let submarine = new Ship(3);
+  let destroyer = new Ship(3);
+  let patrolBoat = new Ship(2);
 
-export {gameController};
+  return [carrier, battleship, submarine, destroyer, patrolBoat];
+}
+
+changeScreen('start', 'pvp');
