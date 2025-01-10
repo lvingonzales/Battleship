@@ -168,6 +168,10 @@ const Interface = {
       shipIconWrapper.addEventListener("dragend", () => {
         shipIconWrapper.classList.remove("active-ship");
       });
+
+      let shipIcon = document.createElement('div');
+      shipIcon.classList.add('ship-icon');
+      shipIconWrapper.append(shipIcon);
     }
   },
 
