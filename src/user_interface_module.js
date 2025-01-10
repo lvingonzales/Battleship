@@ -5,6 +5,22 @@ const downArrow = "\u25BE";
 const Interface = {
   uiBoard: [...Array(10)].map(() => Array(10).fill("")),
 
+  changeScreen(state, gameType) {
+    clearPage();
+    switch (state) {
+      case "start":
+        gameController.initializeGame(gameType);
+        gameController.boardTest();
+        gamePage.loadGamePage();
+        gamePage.createBoard();
+        gamePage.loadCellData();
+        break;
+      case "home":
+        homePage.loadHomePage();
+        break;
+    }
+  },
+
   loadHomePage() {
     let title = document.createElement("div");
     title.id = "title";
@@ -216,10 +232,7 @@ async function handleClick(e) {
     Number(targetCell.dataset.x),
     Number(targetCell.dataset.y),
   );
-  let messageBox = document.getElementById("message-box");
-  let newMessage = document.createElement("div");
-  newMessage.classList.add("message");
-
+  
   getCells().forEach((cell) => {
     cell.removeEventListener("click", handleClick, true);
     cell.classList.remove("active");
@@ -229,18 +242,14 @@ async function handleClick(e) {
     return;
   }
 
-  let message = board.receiveAttack(boardCell);
   updateCell(targetCell, boardCell);
+  addMessage()
   if (boardCell.value === 2) {
-    newMessage.textContent = message;
-    messageBox.prepend(newMessage);
+    // Swap to other board
     await turnTimer(3000);
     gameController.changeTurns();
     gamePage.loadCellData();
-  } else if (boardCell.value === 3) {
-    newMessage.textContent = message;
-    messageBox.prepend(newMessage);
-  }
+  } 
 
   getCells().forEach((cell) => {
     if (cell.dataset.value <= 1) {
@@ -251,7 +260,11 @@ async function handleClick(e) {
 }
 
 function addMessage(message) {
-
+  let messageBox = document.getElementById("message-box");
+  let newMessage = document.createElement("div");
+  newMessage.classList.add("message");
+  newMessage.textContent = message;
+  messageBox.prepend(newMessage);
 }
 
-export { Interface };
+export default Interface;
