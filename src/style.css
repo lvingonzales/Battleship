@@ -199,14 +199,24 @@ footer {
     grid-template-rows: repeat(10, 1fr);
     align-items: center;
     justify-items: center;
+    padding-top: 1rem;
+    gap: 0.5rem;
 }
 
 .ship-wrapper {
     width: 2.5rem;
     height: 100%;
-    border: 1px solid black;
+    display: flex;
+    justify-content: center;
 }
 
 .active-ship {
     border: 3px solid yellow;
+}
+
+.ship-icon {
+    width: 3rem;
+    height: 100%;
+    border-radius: 1.5rem;
+    background-color: gray;
 }
