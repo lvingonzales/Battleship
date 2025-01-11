@@ -188,6 +188,10 @@ const Interface = {
     sidebar.id = "sidebar";
     container.append(sidebar);
 
+    let shipGrid = document.createElement('div');
+    shipGrid.id = 'ship-grid';
+    boardDiv.append(shipGrid);
+
     this.addShipIcons();
 
     let messageLog = document.createElement("div");
