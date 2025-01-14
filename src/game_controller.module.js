@@ -63,23 +63,6 @@ const gameController = {
     this.activePlayer =
       this.activePlayer === this.players[0] ? this.players[1] : this.players[0];
   },
-
-  // boardTest() {
-  //   console.log(`setting player ones board`);
-  //   let player = this.getActivePlayer();
-
-  //   player.board.addShip(3, 3, 0, 0, 4);
-  //   console.log(`finished`);
-  //   console.log("setting player 2s board");
-  //   this.changeTurns();
-  //   player = this.getActivePlayer();
-
-  //   player.board.addShip(6, 6, 1, 0, 4);
-  //   console.log(`finished`);
-
-  //   this.changeTurns();
-  //   this.phase = "play";
-  // }
 };
 
 function addShipSet() {

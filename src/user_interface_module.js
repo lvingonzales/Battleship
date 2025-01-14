@@ -226,7 +226,7 @@ function getCellElement(x, y) {
 function updateCells(cells = getCells()) {
   let board = gameController.getActivePlayer().board;
 
-  cells.forEach(cell => {
+  cells.forEach((cell) => {
     let boardCell = board.getCell(cell.dataset.x, cell.dataset.y);
 
     // if (boardCell.value <= 1) {
@@ -237,13 +237,13 @@ function updateCells(cells = getCells()) {
     //   cell.textContent = "O";
     // }
 
-    if (boardCell.value === 1) {
+    if (boardCell.value === 1){
       cell.style.pointerEvents = "none";
     }
 
+    cell.dataset.value = boardCell.value;
     cell.dataset.cell = JSON.stringify(boardCell);
-  })
-    
+  });
 }
 
 function turnTimer(ms) {
@@ -295,12 +295,15 @@ function addMessage(message) {
 function startPlacement(event) {
   event.currentTarget.classList.add("active-ship");
   getCells().forEach((cell) => {
-    cell.classList.add("active");
-    cell.addEventListener("click", placeShip);
+    if (cell.dataset.value !== '1') {
+      cell.classList.add("active");
+      cell.addEventListener("click", placeShip);
+    }
   });
 }
 
 function placeShip(event) {
+  console.log ({target: event.target, currTarget: event.currentTarget});
   let activeBoard = gameController.getActivePlayer().board;
   let startingCell = JSON.parse(event.target.dataset.cell);
   let activeShip = document.querySelector(".active-ship");
@@ -316,13 +319,12 @@ function placeShip(event) {
   // Remove it from the sidebar div
   event.target.append(activeShip);
   // append it to the cell div and align its top and left
-  
 
   activeShip.classList.remove("active-ship");
 
-  getCells().forEach (cell => {
+  getCells().forEach((cell) => {
     cell.classList.remove("active");
-  })
+  });
 
   updateCells();
 }
