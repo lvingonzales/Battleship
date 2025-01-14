@@ -91,10 +91,9 @@
 
 // Testing Player class methods
 
+const gameBoard = require("./board.module");
+let board = new gameBoard();
 
-const addShipSet = require('./main.js');
-
-
-test (`addShipSet returns an array of objects that are instances of the Ship class`, () => {
-    expect(addShipSet()[0]).toBeInstanceOf(Ship);
-})
+test("Trying to add a ship to an invalid spot will throw an Error!", () => {
+    expect(board.addShip({x: 9, y: 9}, 1, 4)).toBe(true);
+});

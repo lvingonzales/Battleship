@@ -1,3 +1,5 @@
+import gameController from "./game_controller.module";
+
 class Ship {
   constructor(length) {
     this.length = length;
@@ -23,6 +25,17 @@ class gameBoard {
     this.board = [...Array(10)].map(() => Array(10).fill(null));
   }
 
+  getCells() {
+    let cells = [];
+    for (let x = 0; x < this.board.length; x++) {
+      for (let y = 0; y < this.board.length; y++) {
+        cells.push(this.board[x][y]);
+      }
+    }
+
+    return cells;
+  }
+
   fillBoard() {
     for (let x = 0; x < this.board.length; x++) {
       for (let y = 0; y < this.board.length; y++) {
@@ -37,11 +50,11 @@ class gameBoard {
 
   checkCell(cell) {
     if (cell === null || cell === undefined) {
-      return false;
+      return new Error("Invalid Placement");
     }
     if (cell.x >= 0 && cell.x <= 9 && cell.y >= 0 && cell.y <= 9) {
       if (cell.ship !== null) {
-        return false;
+        return new Error("Cells Occupied");
       }
       if (cell.value <= 1) {
         return true;
@@ -64,51 +77,36 @@ class gameBoard {
     }
   }
 
-  addShip(start, direction, board = this.board) {
-    if (row_col > 1 || row_col < 0 || up_down > 1 || up_down < 0) {
-      throw new Error(`Invalid Direction`);
-    }
-    if (board[x][y].value === 0) {
-      let newShip = new Ship(length);
+  addShip(start, direction, length) {
+    // if (row_col > 1 || row_col < 0 || up_down > 1 || up_down < 0) {
+    //   throw new Error(`Invalid Direction`);
+    // }
 
-      // 50/50 chance to determine the direction boats are placed in,
-      // let row_colChoice = (Math.random() >= 0.5)? 1 : 0; // 0: row, 1 col
-      // let directionChoice = (Math.random() >= 0.5)? 1 : 0; // 0: up/right, 1: down/left
-      let validCells = this.getValidCells(start, direction, length);
-      validCells.forEach(validCell => {
-        if (validCell.valid){
-          validCell.cell.ship = newShip;
-        } else if (!validCell.cell.valid){
-          validCell.cell.
+    let currentCell = this.getCell(start.x, start.y);
+    if (start.value === 0) {
+      let ship = gameController.getActivePlayer().ships.find(element => element.length === Number(length));
+      for (let i = 0; i < length; i++) {
+        
+        // 50/50 chance to determine the direction boats are placed in,
+        // let row_colChoice = (Math.random() >= 0.5)? 1 : 0; // 0: row, 1 col
+        // let directionChoice = (Math.random() >= 0.5)? 1 : 0; // 0: up/right, 1: down/left
+        try {
+          this.checkCell(currentCell);
+        } catch (error) {
+          return alert(message);
         }
-      })
-    }
+        currentCell.value = 1;
+        currentCell.ship = ship;
 
+        // Direction: row = 0, column = 1
+        if (direction === 0) {
+          currentCell = this.getCell(currentCell.x + 1, currentCell.y);
+        } else {
+          currentCell = this.getCell(currentCell.x,currentCell.y + 1);
+        }
+      }
+    }
     return true;
-  }
-
-  getValidCells(start, direction, length) {
-    let cells = [];
-    let currentCell = start;
-
-    if (!this.checkCell(currentCell)) {
-      cells.push({ cell: currentCell, valid: false });
-    } else {
-      cells.push({ cell: currentCell, valid: true });
-    }
-
-    for (let i = 0; i < length - 1; i++) {
-      if (!this.checkCell(currentCell)) {
-        cells.push({ cell: currentCell, valid: false });
-      }
-      if (direction === 0) {
-        currentCell = this.getCell(currentCell.x, currentCell.y + 1);
-      } else {
-        currentCell = this.getCell(currentCell.x - 1, currentCell.y);
-      }
-      cells.push({ cell: currentCell, valid: true });
-    }
-    return cells;
   }
 }
 
@@ -120,5 +118,7 @@ class Cell {
     this.ship = null;
   }
 }
+
+// module.exports = gameBoard;
 
 export { gameBoard, Ship };

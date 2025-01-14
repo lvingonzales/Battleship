@@ -1,7 +1,6 @@
 // Interface
 import gameController from "./game_controller.module";
 import gameBoard from "./board.module";
-import { json } from "express";
 const contentDiv = document.getElementById("content");
 const downArrow = "\u25BE";
 
@@ -145,7 +144,7 @@ const Interface = {
       let boardCell = activeBoard.getCell(x, y);
       cell.dataset.value = boardCell.value;
       cell.dataset.cell = JSON.stringify(boardCell);
-      updateCell(cell, boardCell);
+      updateCells();
     });
   },
 
@@ -157,19 +156,14 @@ const Interface = {
 
       let shipIconWrapper = document.createElement("div");
       shipIconWrapper.classList.add("ship-wrapper");
-      if (i > 2) {
-        shipIconWrapper.style.gridRow = `6 / span ${player.ships[i].length}`;
-      } else {
-        shipIconWrapper.style.gridRow = `span ${player.ships[i].length}`;
-      }
+      shipIconWrapper.style.height = 50 * player.ships[i].length + "px";
       shipIconWrapper.dataset.length = player.ships[i].length;
-
       sidebar.append(shipIconWrapper);
 
-      shipIconWrapper.addEventListener('click', startPlacement);
+      shipIconWrapper.addEventListener("click", startPlacement, true);
 
-      let shipIcon = document.createElement('div');
-      shipIcon.classList.add('ship-icon');
+      let shipIcon = document.createElement("div");
+      shipIcon.classList.add("ship-icon");
       shipIconWrapper.append(shipIcon);
     }
   },
@@ -229,14 +223,27 @@ function getCellElement(x, y) {
   return document.querySelector(`[data-x="${x}"][data-y="${y}"]`);
 }
 
-function updateCell(cell, boardCell) {
-  if (boardCell.value <= 1) {
-    cell.textContent = "?";
-  } else if (boardCell.value === 2) {
-    cell.textContent = "X";
-  } else if (boardCell.value === 3) {
-    cell.textContent = "O";
-  }
+function updateCells(cells = getCells()) {
+  let board = gameController.getActivePlayer().board;
+
+  cells.forEach(cell => {
+    let boardCell = board.getCell(cell.dataset.x, cell.dataset.y);
+
+    // if (boardCell.value <= 1) {
+    //   cell.textContent = "?";
+    // } else if (boardCell.value === 2) {
+    //   cell.textContent = "X";
+    // } else if (boardCell.value === 3) {
+    //   cell.textContent = "O";
+    // }
+
+    if (boardCell.value === 1) {
+      cell.style.pointerEvents = "none";
+    }
+
+    cell.dataset.cell = JSON.stringify(boardCell);
+  })
+    
 }
 
 function turnTimer(ms) {
@@ -286,20 +293,38 @@ function addMessage(message) {
 }
 
 function startPlacement(event) {
-  getCells().forEach(cell => {
-    cell.classList.add('active');
-    cell.addEventListener('click', placeShip);
-  })
+  event.currentTarget.classList.add("active-ship");
+  getCells().forEach((cell) => {
+    cell.classList.add("active");
+    cell.addEventListener("click", placeShip);
+  });
 }
 
 function placeShip(event) {
   let activeBoard = gameController.getActivePlayer().board;
-
   let startingCell = JSON.parse(event.target.dataset.cell);
+  let activeShip = document.querySelector(".active-ship");
 
-  if (activeBoard.addShip(startingCell,direction));
+  try {
+    activeBoard.addShip(startingCell, direction, activeShip.dataset.length);
+  } catch (error) {
+    return alert("Invalid Placement");
+  }
 
-  console.log(event.target.dataset.cell);
+  // Change the positioning of the ship
+  activeShip.classList.add("placed-ship");
+  // Remove it from the sidebar div
+  event.target.append(activeShip);
+  // append it to the cell div and align its top and left
+  
+
+  activeShip.classList.remove("active-ship");
+
+  getCells().forEach (cell => {
+    cell.classList.remove("active");
+  })
+
+  updateCells();
 }
 
 export default Interface;
