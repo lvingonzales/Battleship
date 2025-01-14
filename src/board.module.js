@@ -64,7 +64,7 @@ class gameBoard {
     }
   }
 
-  addShip(x, y, row_col, up_down, length, board = this.board) {
+  addShip(start, direction, board = this.board) {
     if (row_col > 1 || row_col < 0 || up_down > 1 || up_down < 0) {
       throw new Error(`Invalid Direction`);
     }
@@ -74,58 +74,41 @@ class gameBoard {
       // 50/50 chance to determine the direction boats are placed in,
       // let row_colChoice = (Math.random() >= 0.5)? 1 : 0; // 0: row, 1 col
       // let directionChoice = (Math.random() >= 0.5)? 1 : 0; // 0: up/right, 1: down/left
-      if (!this.checkShipCells(x, y, row_col, up_down, length)) {
-        throw new Error(`Invalid Placement`);
-      }
-
-      for (let i = 0; i < length; i++) {
-        if (row_col === 0) {
-          if (up_down === 0) {
-            board[x][y].ship = newShip;
-            board[x][y].value = 1;
-            y = y + 1;
-          } else {
-            board[x][y].ship = newShip;
-            board[x][y].value = 1;
-            y = y - 1;
-          }
-        } else {
-          if (up_down === 0) {
-            board[x][y].ship = newShip;
-            board[x][y].value = 1;
-            x = x - 1;
-          } else {
-            board[x][y].ship = newShip;
-            board[x][y].value = 1;
-            x = x + 1;
-          }
+      let validCells = this.getValidCells(start, direction, length);
+      validCells.forEach(validCell => {
+        if (validCell.valid){
+          validCell.cell.ship = newShip;
+        } else if (!validCell.cell.valid){
+          validCell.cell.
         }
-      }
+      })
     }
 
-    return board[x][y].ship;
+    return true;
   }
 
-  checkShipCells(x, y, row_col, up_down, length) {
-    for (let i = 0; i < length; i++) {
-      if (!this.checkCell(this.getCell(x, y))) {
-        return false;
-      }
-      if (row_col === 1) {
-        if (up_down === 0) {
-          x = x - 1;
-        } else {
-          x = x + 1;
-        }
-      } else {
-        if (up_down === 0) {
-          y = y + 1;
-        } else {
-          y = y - 1;
-        }
-      }
+  getValidCells(start, direction, length) {
+    let cells = [];
+    let currentCell = start;
+
+    if (!this.checkCell(currentCell)) {
+      cells.push({ cell: currentCell, valid: false });
+    } else {
+      cells.push({ cell: currentCell, valid: true });
     }
-    return true;
+
+    for (let i = 0; i < length - 1; i++) {
+      if (!this.checkCell(currentCell)) {
+        cells.push({ cell: currentCell, valid: false });
+      }
+      if (direction === 0) {
+        currentCell = this.getCell(currentCell.x, currentCell.y + 1);
+      } else {
+        currentCell = this.getCell(currentCell.x - 1, currentCell.y);
+      }
+      cells.push({ cell: currentCell, valid: true });
+    }
+    return cells;
   }
 }
 
@@ -138,4 +121,4 @@ class Cell {
   }
 }
 
-export {gameBoard, Ship};
+export { gameBoard, Ship };

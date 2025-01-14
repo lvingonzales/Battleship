@@ -231,3 +231,11 @@ footer {
     height: 100%;
     z-index: 10;
 }
+
+.valid-placement {
+    background-color: green;
+}
+
+.invalid-placement {
+    background-color: orange;
+}

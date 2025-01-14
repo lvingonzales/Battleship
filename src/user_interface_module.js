@@ -1,8 +1,11 @@
 // Interface
 import gameController from "./game_controller.module";
 import gameBoard from "./board.module";
+import { json } from "express";
 const contentDiv = document.getElementById("content");
 const downArrow = "\u25BE";
+
+let direction = 1; // row = 0 column = 1;
 
 const Interface = {
   uiBoard: [...Array(10)].map(() => Array(10).fill("")),
@@ -115,9 +118,6 @@ const Interface = {
         cell.dataset.x = x;
         cell.dataset.y = y;
         cell.dataset.value = 0;
-        cell.classList.add("active");
-
-        cell.addEventListener("click", handleClick, true);
 
         row.append(cell);
       }
@@ -135,6 +135,8 @@ const Interface = {
 
     if (gameController.phase === "play") {
       activeBoard = gameController.getOpposingBoard();
+    } else {
+      activeBoard = gameController.getActivePlayer().board;
     }
 
     cells.forEach((cell) => {
@@ -142,6 +144,7 @@ const Interface = {
       let y = Number(cell.dataset.y);
       let boardCell = activeBoard.getCell(x, y);
       cell.dataset.value = boardCell.value;
+      cell.dataset.cell = JSON.stringify(boardCell);
       updateCell(cell, boardCell);
     });
   },
@@ -159,15 +162,11 @@ const Interface = {
       } else {
         shipIconWrapper.style.gridRow = `span ${player.ships[i].length}`;
       }
-      shipIconWrapper.draggable = true;
+      shipIconWrapper.dataset.length = player.ships[i].length;
 
       sidebar.append(shipIconWrapper);
-      shipIconWrapper.addEventListener("dragstart", () => {
-        shipIconWrapper.classList.add("active-ship");
-      });
-      shipIconWrapper.addEventListener("dragend", () => {
-        shipIconWrapper.classList.remove("active-ship");
-      });
+
+      shipIconWrapper.addEventListener('click', startPlacement);
 
       let shipIcon = document.createElement('div');
       shipIcon.classList.add('ship-icon');
@@ -188,9 +187,9 @@ const Interface = {
     sidebar.id = "sidebar";
     container.append(sidebar);
 
-    let shipGrid = document.createElement('div');
-    shipGrid.id = 'ship-grid';
-    boardDiv.append(shipGrid);
+    // let shipGrid = document.createElement('div');
+    // shipGrid.id = 'ship-grid';
+    // boardDiv.append(shipGrid);
 
     this.addShipIcons();
 
@@ -244,7 +243,7 @@ function turnTimer(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function handleClick(e) {
+async function shootCell(e) {
   let targetCell = e.target;
   let board = gameController.getOpposingBoard();
   let boardCell = board.getCell(
@@ -253,7 +252,7 @@ async function handleClick(e) {
   );
 
   getCells().forEach((cell) => {
-    cell.removeEventListener("click", handleClick, true);
+    cell.removeEventListener("click", shootCell, true);
     cell.classList.remove("active");
   });
 
@@ -273,7 +272,7 @@ async function handleClick(e) {
   getCells().forEach((cell) => {
     if (cell.dataset.value <= 1) {
       cell.classList.add("active");
-      cell.addEventListener("click", handleClick, true);
+      cell.addEventListener("click", shootCell, true);
     }
   });
 }
@@ -284,6 +283,23 @@ function addMessage(message) {
   newMessage.classList.add("message");
   newMessage.textContent = message;
   messageBox.prepend(newMessage);
+}
+
+function startPlacement(event) {
+  getCells().forEach(cell => {
+    cell.classList.add('active');
+    cell.addEventListener('click', placeShip);
+  })
+}
+
+function placeShip(event) {
+  let activeBoard = gameController.getActivePlayer().board;
+
+  let startingCell = JSON.parse(event.target.dataset.cell);
+
+  if (activeBoard.addShip(startingCell,direction));
+
+  console.log(event.target.dataset.cell);
 }
 
 export default Interface;
