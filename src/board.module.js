@@ -50,11 +50,11 @@ class gameBoard {
 
   checkCell(cell) {
     if (cell === null || cell === undefined) {
-      return new Error("Invalid Placement");
+      throw new Error("Invalid Placement");
     }
     if (cell.x >= 0 && cell.x <= 9 && cell.y >= 0 && cell.y <= 9) {
       if (cell.ship !== null) {
-        return new Error("Cells Occupied");
+        throw new Error("Cells Occupied");
       }
       if (cell.value <= 1) {
         return true;
