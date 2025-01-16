@@ -191,11 +191,13 @@ const Interface = {
     sidebar.append(controlDiv);
 
     let rotateButton = document.createElement("button");
+    rotateButton.id = "rotate";
     rotateButton.classList.add ("controls");
     rotateButton.textContent = "Rotate";
     controlDiv.append(rotateButton);
 
     let resetButton = document.createElement("button");
+    resetButton.id = "reset";
     resetButton.textContent = "Reset"
     resetButton.classList.add ("controls")
     controlDiv.append(resetButton);
@@ -376,6 +378,8 @@ function placeShip(event) {
 }
 
 function rotateShip (event) {
+  if (!ships.length) {return;}
+
   let shipSection = document.getElementById("ship-section");
   let activeShip = shipSection.querySelector(".ship-wrapper");
 
@@ -406,14 +410,10 @@ function resetShips (event) {
   ships = Array.from(document.querySelectorAll(".ship-wrapper"));
 
   ships.forEach (ship => {
-    ship.style.display = 'none';
-    shipSection.append(ship);
-    ship.style.transform = "rotate(0deg)";
-    ship.style.transformOrigin = "";
-    ship.style.top = "";
-    ship.style.left = "";
+    ship.remove();
   })
 
+  Interface.addShipIcons();
   direction = 1;
 
   ships[0].style.display = "flex"; 
