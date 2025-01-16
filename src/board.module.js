@@ -84,9 +84,10 @@ class gameBoard {
 
     let currentCell = this.getCell(start.x, start.y);
     if (start.value === 0) {
-      let ship = gameController.getActivePlayer().ships.find(element => element.length === Number(length));
+      let ship = gameController
+        .getActivePlayer()
+        .ships.find((element) => element.length === Number(length));
       for (let i = 0; i < length; i++) {
-        
         // 50/50 chance to determine the direction boats are placed in,
         // let row_colChoice = (Math.random() >= 0.5)? 1 : 0; // 0: row, 1 col
         // let directionChoice = (Math.random() >= 0.5)? 1 : 0; // 0: up/right, 1: down/left
@@ -100,9 +101,13 @@ class gameBoard {
 
         // Direction: row = 0, column = 1
         if (direction === 0) {
-          currentCell = this.getCell(currentCell.x + 1, currentCell.y);
+          if (currentCell.x + 1 !== 10) {
+            currentCell = this.getCell(currentCell.x + 1, currentCell.y);
+          }
         } else {
-          currentCell = this.getCell(currentCell.x,currentCell.y + 1);
+          if (currentCell.y + 1 != 10) {
+            currentCell = this.getCell(currentCell.x, currentCell.y + 1);
+          }
         }
       }
     }
