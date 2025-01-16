@@ -1,8 +1,8 @@
 // Interface
 import gameController from "./game_controller.module";
-import gameBoard from "./board.module";
 const contentDiv = document.getElementById("content");
 const downArrow = "\u25BE";
+let ships = [];
 
 let direction = 1; // row = 0 column = 1;
 
@@ -152,20 +152,25 @@ const Interface = {
     let player = gameController.getActivePlayer();
 
     for (let i = 0; i < player.ships.length; i++) {
-      let sidebar = document.getElementById("sidebar");
+      let shipSection = document.getElementById("ship-section");
 
       let shipIconWrapper = document.createElement("div");
       shipIconWrapper.classList.add("ship-wrapper");
-      shipIconWrapper.style.height = 50 * player.ships[i].length + "px";
+      shipIconWrapper.style.height = 48 * player.ships[i].length + "px";
       shipIconWrapper.dataset.length = player.ships[i].length;
-      sidebar.append(shipIconWrapper);
+      shipSection.append(shipIconWrapper);
+      
 
       shipIconWrapper.addEventListener("click", startPlacement, true);
 
       let shipIcon = document.createElement("div");
       shipIcon.classList.add("ship-icon");
       shipIconWrapper.append(shipIcon);
+      shipIconWrapper.style.display = "none";
     }
+
+    ships = Array.from(document.querySelectorAll(".ship-wrapper"));
+    ships[0].style.display = "flex";
   },
 
   loadGamePage() {
@@ -180,6 +185,17 @@ const Interface = {
     let sidebar = document.createElement("div");
     sidebar.id = "sidebar";
     container.append(sidebar);
+
+    let rotateButton = document.createElement("button");
+    rotateButton.id = "rotate-btn";
+    rotateButton.textContent = "Rotate";
+    sidebar.append(rotateButton);
+
+    rotateButton.addEventListener("click", rotateShip, true);
+
+    let shipSection = document.createElement("div");
+    shipSection.id = "ship-section";
+    sidebar.append(shipSection);
 
     // let shipGrid = document.createElement('div');
     // shipGrid.id = 'ship-grid';
@@ -237,7 +253,7 @@ function updateCells(cells = getCells()) {
     //   cell.textContent = "O";
     // }
 
-    if (boardCell.value === 1){
+    if (boardCell.value === 1) {
       cell.style.pointerEvents = "none";
     }
 
@@ -295,7 +311,7 @@ function addMessage(message) {
 function startPlacement(event) {
   event.currentTarget.classList.add("active-ship");
   getCells().forEach((cell) => {
-    if (cell.dataset.value !== '1') {
+    if (cell.dataset.value !== "1") {
       cell.classList.add("active");
       cell.addEventListener("click", placeShip);
     }
@@ -303,21 +319,30 @@ function startPlacement(event) {
 }
 
 function placeShip(event) {
-  console.log ({target: event.target, currTarget: event.currentTarget});
+  console.log({ target: event.target, currTarget: event.currentTarget });
   let activeBoard = gameController.getActivePlayer().board;
   let startingCell = JSON.parse(event.target.dataset.cell);
   let activeShip = document.querySelector(".active-ship");
-
+  
   try {
     activeBoard.addShip(startingCell, direction, activeShip.dataset.length);
   } catch (error) {
     return alert("Invalid Placement");
   }
 
+  ships.shift();
   // Change the positioning of the ship
   activeShip.classList.add("placed-ship");
   // Remove it from the sidebar div
   event.target.append(activeShip);
+
+  if (direction === 0){
+    activeShip.style.transformOrigin = "top left";
+    activeShip.style.transform = "rotate(270deg)";
+    activeShip.style.top = "44px";
+    activeShip.style.left = "4px";
+  }
+
   // append it to the cell div and align its top and left
 
   activeShip.classList.remove("active-ship");
@@ -326,7 +351,32 @@ function placeShip(event) {
     cell.classList.remove("active");
   });
 
+  if (ships.length) {
+    ships[0].style.display = "flex";
+    if (direction === 0) {
+      ships[0].style.transform = "rotate(90deg)";
+    }
+    else {
+      ships[0].style.transform = "rotate(0deg)";
+    }
+  }
+  
   updateCells();
+}
+
+function rotateShip (event) {
+  let shipSection = document.getElementById("ship-section");
+  let activeShip = shipSection.querySelector(".ship-wrapper");
+
+  if (direction === 0){
+    direction = 1;
+    shipSection.style.flexDirection = "row";
+    activeShip.style.transform = "rotate(0deg)";
+  } else {
+    direction = 0;
+    shipSection.style.flexDirection = "column";
+    activeShip.style.transform = "rotate(90deg)";
+  }
 }
 
 export default Interface;
