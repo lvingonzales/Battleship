@@ -344,7 +344,7 @@ function placeShip(event) {
   try {
     activeBoard.addShip(startingCell, direction, activeShip.dataset.length);
   } catch (error) {
-    return alert("Invalid Placement");
+    return alert(error.message);
   }
 
   ships.shift();

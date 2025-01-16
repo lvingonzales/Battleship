@@ -81,37 +81,48 @@ class gameBoard {
     // if (row_col > 1 || row_col < 0 || up_down > 1 || up_down < 0) {
     //   throw new Error(`Invalid Direction`);
     // }
+    let ship = gameController
+      .getActivePlayer()
+      .ships.find((element) => element.length === Number(length));
+      let validCells = null;
 
+      try {
+        validCells = this.checkValidCells(start, direction, length);
+      } catch (error) {
+        throw error;
+      }
+    
+      validCells.forEach((cell) => {
+        this.getCell(cell.x, cell.y).value = 1;
+        this.getCell(cell.x, cell.y).ship = ship;
+      });
+    // 50/50 chance to determine the direction boats are placed in,
+    // let row_colChoice = (Math.random() >= 0.5)? 1 : 0; // 0: row, 1 col
+    // let directionChoice = (Math.random() >= 0.5)? 1 : 0; // 0: up/right, 1: down/left
+  }
+
+  checkValidCells(start, direction, length) {
     let currentCell = this.getCell(start.x, start.y);
-    if (start.value === 0) {
-      let ship = gameController
-        .getActivePlayer()
-        .ships.find((element) => element.length === Number(length));
-      for (let i = 0; i < length; i++) {
-        // 50/50 chance to determine the direction boats are placed in,
-        // let row_colChoice = (Math.random() >= 0.5)? 1 : 0; // 0: row, 1 col
-        // let directionChoice = (Math.random() >= 0.5)? 1 : 0; // 0: up/right, 1: down/left
-        try {
-          this.checkCell(currentCell);
-        } catch (error) {
-          return alert(message);
-        }
-        currentCell.value = 1;
-        currentCell.ship = ship;
+    let validCells = [];
 
-        // Direction: row = 0, column = 1
+    try {
+      for (let i = 0; i < length; i++) {
+        this.checkCell(currentCell);
+        validCells.push(currentCell);
         if (direction === 0) {
-          if (currentCell.x + 1 !== 10) {
+          if (i !== length-1) {
             currentCell = this.getCell(currentCell.x + 1, currentCell.y);
           }
         } else {
-          if (currentCell.y + 1 != 10) {
+          if (i !== length-1) {
             currentCell = this.getCell(currentCell.x, currentCell.y + 1);
           }
         }
       }
+    } catch (error) {
+      throw error;
     }
-    return true;
+    return validCells;
   }
 }
 
