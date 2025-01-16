@@ -200,6 +200,8 @@ const Interface = {
     resetButton.classList.add ("controls")
     controlDiv.append(resetButton);
 
+    resetButton.addEventListener("click", resetShips, true);
+
     rotateButton.addEventListener("click", rotateShip, true);
 
     let shipSection = document.createElement("div");
@@ -386,6 +388,35 @@ function rotateShip (event) {
     shipSection.style.flexDirection = "column";
     activeShip.style.transform = "rotate(90deg)";
   }
+}
+
+function resetShips (event) {
+  let shipSection = document.getElementById("ship-section");
+  let board = gameController.getActivePlayer().board;
+  board.getCells().forEach(cell => {
+    cell.value = 0;
+    cell.ship = null;
+  });
+
+  updateCells();
+
+  getCells().forEach(cell => {
+    cell.style.pointerEvents = "";
+  })
+  ships = Array.from(document.querySelectorAll(".ship-wrapper"));
+
+  ships.forEach (ship => {
+    ship.style.display = 'none';
+    shipSection.append(ship);
+    ship.style.transform = "rotate(0deg)";
+    ship.style.transformOrigin = "";
+    ship.style.top = "";
+    ship.style.left = "";
+  })
+
+  direction = 1;
+
+  ships[0].style.display = "flex"; 
 }
 
 export default Interface;
