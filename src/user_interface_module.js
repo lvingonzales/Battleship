@@ -186,10 +186,19 @@ const Interface = {
     sidebar.id = "sidebar";
     container.append(sidebar);
 
+    let controlDiv = document.createElement('div');
+    controlDiv.id = "control";
+    sidebar.append(controlDiv);
+
     let rotateButton = document.createElement("button");
-    rotateButton.id = "rotate-btn";
+    rotateButton.classList.add ("controls");
     rotateButton.textContent = "Rotate";
-    sidebar.append(rotateButton);
+    controlDiv.append(rotateButton);
+
+    let resetButton = document.createElement("button");
+    resetButton.textContent = "Reset"
+    resetButton.classList.add ("controls")
+    controlDiv.append(resetButton);
 
     rotateButton.addEventListener("click", rotateShip, true);
 
