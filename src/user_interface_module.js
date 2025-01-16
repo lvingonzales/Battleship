@@ -186,10 +186,23 @@ const Interface = {
     sidebar.id = "sidebar";
     container.append(sidebar);
 
+    let controlDiv = document.createElement('div');
+    controlDiv.id = "control";
+    sidebar.append(controlDiv);
+
     let rotateButton = document.createElement("button");
-    rotateButton.id = "rotate-btn";
+    rotateButton.id = "rotate";
+    rotateButton.classList.add ("controls");
     rotateButton.textContent = "Rotate";
-    sidebar.append(rotateButton);
+    controlDiv.append(rotateButton);
+
+    let resetButton = document.createElement("button");
+    resetButton.id = "reset";
+    resetButton.textContent = "Reset"
+    resetButton.classList.add ("controls")
+    controlDiv.append(resetButton);
+
+    resetButton.addEventListener("click", resetShips, true);
 
     rotateButton.addEventListener("click", rotateShip, true);
 
@@ -365,6 +378,8 @@ function placeShip(event) {
 }
 
 function rotateShip (event) {
+  if (!ships.length) {return;}
+
   let shipSection = document.getElementById("ship-section");
   let activeShip = shipSection.querySelector(".ship-wrapper");
 
@@ -377,6 +392,31 @@ function rotateShip (event) {
     shipSection.style.flexDirection = "column";
     activeShip.style.transform = "rotate(90deg)";
   }
+}
+
+function resetShips (event) {
+  let shipSection = document.getElementById("ship-section");
+  let board = gameController.getActivePlayer().board;
+  board.getCells().forEach(cell => {
+    cell.value = 0;
+    cell.ship = null;
+  });
+
+  updateCells();
+
+  getCells().forEach(cell => {
+    cell.style.pointerEvents = "";
+  })
+  ships = Array.from(document.querySelectorAll(".ship-wrapper"));
+
+  ships.forEach (ship => {
+    ship.remove();
+  })
+
+  Interface.addShipIcons();
+  direction = 1;
+
+  ships[0].style.display = "flex"; 
 }
 
 export default Interface;
