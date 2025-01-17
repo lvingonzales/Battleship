@@ -1,4 +1,4 @@
-import {gameBoard, Ship} from "./board.module";
+import { gameBoard, Ship } from "./board.module";
 class Player {
   constructor(type, id, name) {
     this.type = type;
@@ -62,6 +62,9 @@ const gameController = {
   changeTurns() {
     this.activePlayer =
       this.activePlayer === this.players[0] ? this.players[1] : this.players[0];
+    if (this.activePlayer.type === "com") {
+      // Do computer player stuff
+    }
   },
 };
 
